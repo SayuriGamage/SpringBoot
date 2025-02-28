@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+</head>
+<body>
+<section id="Customers">
+    <!-- Customer Section Content -->
+    <div>
+
+        <p class="fs-1 text-center">Customer Form</p>
+        <!-- Content for Customer Form -->
+        <div class="container">
+            <div class="card mx-auto" style="max-width: 1000px;background-color: rgba(255,255,255,0.09);">
+                <div class="card-body">
+                    <form id="customerForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" id="id" class="form-control" placeholder="customer id" aria-label="Name">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="name" class="form-control" placeholder="customer name" aria-label="Tel Number">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="address" class="form-control" placeholder="customer address" aria-label="Email">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4 gap-3">
+                            <button type="button" class="btn btn-primary" id="save">Save</button>
+                            <button type="button" class="btn btn-success" id="update">Update</button>
+                            <button type="button" class="btn btn-danger" id="delete">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <table class="table table-striped mx-auto" style="max-width: 1000px;background-color: rgba(255,255,255,0.27);">
+                <thead>
+                <tr>
+                    <th scope="col" style="background-color: rgba(66,81,96,0.91)">Id</th>
+                    <th scope="col" style="background-color: rgba(66,81,96,0.91)">Name</th>
+                    <th scope="col" style="background-color: rgba(66,81,96,0.91)">Address</th>
+                </tr>
+                </thead>
+                <tbody id="customerTableBody">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+<script src="js/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+    $("#save").click((e) =>{
+        console.log("save clicked")
+        e.preventDefault();
+
+        let cusId = $("#id").val();
+        let cusName = $("#name").val();
+        let cusAddress = $("#address").val();
+
+        console.log(cusId, cusName, cusAddress);
+
+        let customer = {
+            id: cusId,
+            name: cusName,
+            address: cusAddress
+        }
+
+        $.ajax({
+            url: "http://localhost:8080/11_Backend_war_exploded/api/v1/customer/save",
+            type: "POST",
+            headers:{
+                'content-type': "application/json"
+            },
+            data: JSON.stringify(customer),
+            success: (resp)=>{
+                alert("Customer saved.")
+                getAll()
+            },
+            error:(err)=>{
+                alert("Customer not saved.")
+            }
+
+
+        });
+
+
+    })
+
+    const getAll = () =>{
+        $.ajax({
+            url: "http://localhost:8080/11_Backend_war_exploded/api/v1/customer/getAll",
+            type:"GET",
+            success:(resp)=>{
+                console.log("Hi")
+                let tableBody = $("#customerTableBody");
+                const customers = resp
+                tableBody.empty();
+                customers.map((customer, number) =>{
+                    let data = `<tr>
+                                <td>${customer.id}</td>
+                                <td>${customer.name}</td>
+                                <td>${customer.address}</td>
+
+                            </tr>`
+
+                    tableBody.append(data);
+                })
+            },
+            error:(err) =>{
+                console.log(err)
+            }
+        });
+    }
+
+    getAll();
+
+</script>
+
+</body>
+</html>
